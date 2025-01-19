@@ -8,6 +8,7 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.3.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="MySql.Data" Version="9.1.0" />
@@ -21,6 +22,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Manager\" />
-    <Folder Include="Model\" />
   </ItemGroup>
 </Project>

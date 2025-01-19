@@ -1,8 +1,10 @@
 ﻿using cmis.Manager;
+using cmis.WebSoket;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using System.Net.WebSockets;
 using System.Text.Json;
 
 namespace cmis
@@ -32,6 +34,8 @@ namespace cmis
             services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<IMenuRepository, MenuRepository>();
             services.AddScoped<IClubRepository, ClubRepository>();
+            services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<WebSocketHandler>(); // WebSocketHandler is Scoped
 
 
             services.AddSwaggerGen(c =>
@@ -79,6 +83,34 @@ namespace cmis
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //web soket
+            // Enable WebSocket support
+            app.UseWebSockets();
+
+            // Map WebSocket route
+            app.Map("/ws", websocketApp =>
+            {
+                websocketApp.Use(async (context, next) =>
+                {
+                    if (context.WebSockets.IsWebSocketRequest)
+                    {
+                        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+                        // Retrieve WebSocketHandler from DI container and call HandleWebSocketAsync
+                        var webSocketHandler = context.RequestServices.GetRequiredService<WebSocketHandler>();
+                        await webSocketHandler.HandleWebSocketAsync(webSocket);
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 400; // Bad Request if it's not a WebSocket request
+                    }
+
+                    await next(); // Make sure to call next middleware if necessary
+                });
+            });
+            //end
+
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -106,5 +138,7 @@ namespace cmis
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
     }
+
 }
