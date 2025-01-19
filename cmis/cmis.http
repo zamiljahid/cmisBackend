@@ -1,0 +1,7 @@
+﻿@cmis_HostAddress = http://localhost:5185
+
+GET {{cmis_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
