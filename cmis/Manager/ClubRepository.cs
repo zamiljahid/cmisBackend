@@ -285,5 +285,23 @@ namespace cmis.Manager
                 return topClubs;
             }
         }
+        public string SaveEventRegistration(EventRegistrationModel eventRegistrationModel)
+        {
+            try
+            {
+                using (IDbConnection dbConnection = new MySqlConnection(_connectionString))
+                {
+                    dbConnection.Open();
+                    string sql = "INSERT INTO event_registration (event_id, user_id, registration_date) VALUES (@event_id, @user_id,@registration_date);";
+                    int rowsAffected = dbConnection.Execute(sql, new { event_id = eventRegistrationModel.event_id, user_id = eventRegistrationModel.user_id, registration_date= eventRegistrationModel.registration_date });
+                    return "Success"; // Returns 1 if insertion was successful
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

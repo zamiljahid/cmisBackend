@@ -11,7 +11,8 @@ namespace cmis.Manager
         Task<List<EventModel>> GetPendingEventsAsync();
         Task<List<MembershipModel>> GetMembersByClubIdAsync(int clubId);
         Task<List<MembershipModel>> GetTopPresidentsAsync();
-        Task<List<TopClubModel>> GetTopClubsAsync(); 
+        Task<List<TopClubModel>> GetTopClubsAsync();
+        string SaveEventRegistration(EventRegistrationModel eventRegistrationModel);
 
     }
 }

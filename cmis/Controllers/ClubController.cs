@@ -1,4 +1,5 @@
 ﻿using cmis.Manager;
+using cmis.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -147,6 +148,24 @@ namespace cmis.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpPost("SaveEventRegistration")]
+        public IActionResult SaveEventRegistration([FromBody] EventRegistrationModel eventRegistrationModel)
+        {
+            if (eventRegistrationModel == null)
+            {
+                return BadRequest("Invalid user data.");
+            }
+
+            try
+            {
+                string result = _clubRepository.SaveEventRegistration(eventRegistrationModel);
+                return StatusCode(StatusCodes.Status200OK, result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }
