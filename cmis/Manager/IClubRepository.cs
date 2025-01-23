@@ -8,7 +8,10 @@ namespace cmis.Manager
     {
         Task<List<ClubModel>> GetAllClubsAsync();
         Task<List<EventModel>> GetUpcomingAndOngoingEventsAsync();
-        Task<List<MembershipModel>> GetMembersByClubIdAsync(int clubId); 
+        Task<List<EventModel>> GetPendingEventsAsync();
+        Task<List<MembershipModel>> GetMembersByClubIdAsync(int clubId);
+        Task<List<MembershipModel>> GetTopPresidentsAsync();
+        Task<List<TopClubModel>> GetTopClubsAsync(); 
 
     }
 }

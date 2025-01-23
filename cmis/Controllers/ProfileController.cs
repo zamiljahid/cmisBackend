@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 
 namespace cmis.Controllers
 {
@@ -30,6 +31,28 @@ namespace cmis.Controllers
                 else
                 {
                     return StatusCode(StatusCodes.Status404NotFound, "User not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet("GetAnnouncements")]
+        public async Task<IActionResult> GetAnnouncements([FromQuery] int? club_id, [FromQuery] string user_id)
+        {
+            try
+            {
+                var announcements = await _profileManager.GetAnnouncementsAsync(club_id, user_id);
+
+                if (announcements != null && announcements.Count > 0)
+                {
+                    return StatusCode(StatusCodes.Status200OK, announcements);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "No announcements found.");
                 }
             }
             catch (Exception ex)

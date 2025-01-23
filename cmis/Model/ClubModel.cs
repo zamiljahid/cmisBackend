@@ -21,16 +21,31 @@ namespace cmis.Model
         public string PicUrl { get; set; }
         public string Status { get; set; }
         public int ClubId { get; set; }
-        public string ClubName { get; set; } // Added
+        public string ClubName { get; set; } 
     }
 
     public class MembershipModel
     {
         public string Id { get; set; }
         public string MemberName { get; set; }
+        public string ProfilePic { get; set; }
         public string Position { get; set; }
         public string Contact { get; set; }
         public string Email { get; set; }
+        public int ElectionParticipation { get; set; }  
+        public int EventParticipation { get; set; }    
+        public int MessageParticipation { get; set; }  
+    }
+
+    public class TopClubModel
+    {
+        public int ClubId { get; set; }
+        public string ClubName { get; set; }
+        public int TotalElectionParticipation { get; set; }
+        public int TotalEventParticipation { get; set; }
+        public int TotalMessageParticipation { get; set; }
+        public int TotalMembers { get; set; }
+        public int TotalPresidents { get; set; }
     }
 
 }

@@ -1,8 +1,11 @@
-﻿using MySql.Data.MySqlClient;
-using Microsoft.Extensions.Configuration;
-using System.Data;
-using cmis.Model;
+﻿using cmis.Model;
 using Dapper;
+using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace cmis.Manager
 {
@@ -19,16 +22,6 @@ namespace cmis.Manager
         {
             return new MySqlConnection(_connectionString);
         }
-
-        //public async Task<List<ProfileModel>> GetAllItemsAsync()
-        //{
-        //    using (var connection = CreateConnection())
-        //    {
-        //        connection.Open();
-        //        var result = await connection.QueryAsync<ProfileModel>("SELECT * FROM user");
-        //        return result.ToList();
-        //    }
-        //}
 
         public ProfileModel GetUserProfileById(string user_id)
         {
@@ -63,5 +56,32 @@ WHERE
             }
         }
 
+        public async Task<List<AnnouncementModel>> GetAnnouncementsAsync(int? club_id, string user_id)
+        {
+            using (var connection = CreateConnection())
+            {
+                connection.Open();
+                string sql = @"
+SELECT 
+    announcement_id AS AnnouncementId,
+    announcement_by_id AS AnnouncementById,
+    club_id AS ClubId,
+    user_id AS UserId,
+    created_at AS CreatedAt,
+    announcement_text AS AnnouncementText,
+    announcement_title AS AnnouncementTitle
+FROM 
+    announcement
+WHERE 
+    (@club_id IS NOT NULL AND club_id = @club_id)
+    OR (@user_id IS NOT NULL AND user_id = @user_id)";
+
+
+                var parameters = new { club_id, user_id };
+                var result = await connection.QueryAsync<AnnouncementModel>(sql, parameters);
+
+                return result.ToList();
+            }
+        }
     }
 }

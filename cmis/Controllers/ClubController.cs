@@ -62,6 +62,28 @@ namespace cmis.Controllers
             }
         }
 
+        [HttpGet("events/pending")]
+        public async Task<IActionResult> GetPendingEvents()
+        {
+            try
+            {
+                var events = await _clubRepository.GetPendingEventsAsync();
+
+                if (events != null && events.Any())
+                {
+                    return StatusCode(StatusCodes.Status200OK, events);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "No pending events found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         [HttpGet("members")]
         public async Task<IActionResult> GetMembersByClubId(int clubId)
         {
@@ -76,6 +98,50 @@ namespace cmis.Controllers
                 else
                 {
                     return StatusCode(StatusCodes.Status404NotFound, "No members found for the specified club.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("top-presidents")]
+        public async Task<IActionResult> GetTopPresidents()
+        {
+            try
+            {
+                var presidents = await _clubRepository.GetTopPresidentsAsync();
+
+                if (presidents != null && presidents.Any())
+                {
+                    return StatusCode(StatusCodes.Status200OK, presidents);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "No presidents found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("top-clubs")]
+        public async Task<IActionResult> GetTopClubs()
+        {
+            try
+            {
+                var topClubs = await _clubRepository.GetTopClubsAsync();
+
+                if (topClubs != null && topClubs.Any())
+                {
+                    return StatusCode(StatusCodes.Status200OK, topClubs);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "No top clubs found.");
                 }
             }
             catch (Exception ex)

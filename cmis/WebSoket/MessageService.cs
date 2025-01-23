@@ -16,7 +16,6 @@ namespace cmis.WebSoket
     public class MessageService: IMessageService
     {
         private readonly string _connectionString;
-
         public MessageService(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("MySQLConnection");
