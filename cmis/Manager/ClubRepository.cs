@@ -214,7 +214,7 @@ namespace cmis.Manager
             IFNULL(COUNT(DISTINCT c.candidate_id), 0) AS ElectionParticipation,
             IFNULL(COUNT(DISTINCT er.event_id), 0) AS EventParticipation,
             IFNULL(COUNT(DISTINCT m.message_id), 0) AS MessageParticipation,
-            GROUP_CONCAT(DISTINCT cm.club_id) AS ClubsInvolved
+            GROUP_CONCAT(DISTINCT cl.club_name) AS ClubNames
         FROM 
             user u
         JOIN 
@@ -227,8 +227,10 @@ namespace cmis.Manager
             event_registration er ON u.user_id = er.user_id 
         LEFT JOIN 
             messages m ON u.user_id = m.user_id 
+        JOIN 
+            club cl ON cm.club_id = cl.club_id  -- Join with club table to get the club name
         WHERE 
-            r.role_id = 2 
+            r.role_id = 2  -- Filter for President role
         GROUP BY 
             u.user_id
         ORDER BY 

@@ -34,7 +34,9 @@ namespace cmis.Model
         public string Email { get; set; }
         public int ElectionParticipation { get; set; }  
         public int EventParticipation { get; set; }    
-        public int MessageParticipation { get; set; }  
+        public int MessageParticipation { get; set; }
+        public string ClubNames { get; set; }
+
     }
 
     public class TopClubModel
