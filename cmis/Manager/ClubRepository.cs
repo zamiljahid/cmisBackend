@@ -2,6 +2,7 @@
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -842,6 +843,66 @@ namespace cmis.Manager
             {
                 throw new Exception("Error occurred while retrieving the latest election status.", ex);
             }
+        }
+
+        public async Task<string> SaveElection(Election election)
+        {
+            try
+            {
+                using (IDbConnection dbConnection = new MySqlConnection(_connectionString))
+                {
+                    dbConnection.Open();
+                    string getClabMembers = string.Format("SELECT \r\n    u.user_id,\r\n    IFNULL(COUNT(DISTINCT c.candidate_id), 0) AS ElectionParticipation,\r\n    IFNULL(COUNT(DISTINCT er.event_id), 0) AS EventParticipation,\r\n    IFNULL(COUNT(DISTINCT m.message_id), 0) AS MessageParticipation\r\nFROM \r\n    user u\r\nJOIN \r\n    role r ON u.role_id = r.role_id\r\nJOIN \r\n    club_members cm ON u.user_id = cm.user_id\r\nLEFT JOIN \r\n    candidate c ON u.user_id = c.user_id \r\nLEFT JOIN \r\n    event_registration er ON u.user_id = er.user_id \r\nLEFT JOIN \r\n    messages m ON u.user_id = m.user_id \r\nWHERE \r\n    cm.club_id = {0}\r\nGROUP BY \r\n    u.user_id\r\nHAVING \r\n    (SELECT COUNT(*) FROM club_members WHERE club_id = {0}) >= 3\r\nORDER BY \r\n    ElectionParticipation DESC, \r\n    EventParticipation DESC, \r\n    MessageParticipation DESC\r\nLIMIT 2;",election.club_id);
+
+                    var candidates = await dbConnection.QueryAsync<GetClabMembers>(getClabMembers);
+
+
+                    if (candidates.Count() > 0)
+                    {
+                        string sql = "INSERT INTO election(start_date,end_date,club_id,status)" +
+              "VALUES (@start_date, @end_date, @club_id, @status);";
+
+                        var parameters = new
+                        {
+                            start_date = election.start_date,
+                            end_date = election.end_date,
+                            club_id = election.club_id,
+                            status = election.status,
+                        };
+
+
+                        int electionId = dbConnection.ExecuteScalar<int>(sql, parameters);
+
+                        if (electionId > 0)
+                        {
+                            foreach (var candidate in candidates)
+                            {
+                                string sqlCandidate = "INSERT INTO Candidate(election_id,user_id)" +
+                                    "VALUES (@election_id, @user_id);";
+
+                                var cParameters = new
+                                {
+                                    election_id = electionId,
+                                    user_id = candidate.user_id,
+                                };
+                                int rowsAffected = dbConnection.Execute(sqlCandidate, cParameters);
+                            }
+                        }
+
+                        return electionId > 0 ? "Success" : "Failure";
+                    }
+                    else
+                    {
+                        return "Election can't be launched due to less member";
+                    }
+ 
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error occurred while saving the election.", ex);
+            }
+
         }
     }
 }

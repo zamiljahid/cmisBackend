@@ -152,4 +152,12 @@ namespace cmis.Model
         public string announcement_title { get; set; }
     }
 
+    public class GetClabMembers
+    {
+        public string user_id { get; set; }
+        public int ElectionParticipation { get; set; }
+        public int EventParticipation { get; set; }
+        public int MessageParticipation { get; set; }
+
+    }
 }

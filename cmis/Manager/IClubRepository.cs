@@ -28,5 +28,6 @@ namespace cmis.Manager
         Task<List<Message>> GetMessagesByClubIdAsync(int clubId);
         Task<int> AddMessageAsync(Message message);
         string GetLatestElectionStatus();
+        Task<string> SaveElection(Election election);
     }
 }

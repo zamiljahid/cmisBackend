@@ -473,6 +473,21 @@ namespace cmis.Controllers
             }
         }
 
+        [HttpPost("SaveElection")]
+        public async Task<IActionResult> SaveElection([FromBody] Election  election)
+        {
+            try
+            {
+                if (SaveElection == null) return BadRequest("Election data is required.");
 
+                var res = await _clubRepository.SaveElection(election);
+
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
     }
 }
