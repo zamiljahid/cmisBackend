@@ -852,7 +852,7 @@ namespace cmis.Manager
                 using (IDbConnection dbConnection = new MySqlConnection(_connectionString))
                 {
                     dbConnection.Open();
-                    string getClabMembers = string.Format("SELECT \r\n    u.user_id,\r\n    IFNULL(COUNT(DISTINCT c.candidate_id), 0) AS ElectionParticipation,\r\n    IFNULL(COUNT(DISTINCT er.event_id), 0) AS EventParticipation,\r\n    IFNULL(COUNT(DISTINCT m.message_id), 0) AS MessageParticipation\r\nFROM \r\n    user u\r\nJOIN \r\n    role r ON u.role_id = r.role_id\r\nJOIN \r\n    club_members cm ON u.user_id = cm.user_id\r\nLEFT JOIN \r\n    candidate c ON u.user_id = c.user_id \r\nLEFT JOIN \r\n    event_registration er ON u.user_id = er.user_id \r\nLEFT JOIN \r\n    messages m ON u.user_id = m.user_id \r\nWHERE \r\n    cm.club_id = {0}\r\nGROUP BY \r\n    u.user_id\r\nHAVING \r\n    (SELECT COUNT(*) FROM club_members WHERE club_id = {0}) >= 3\r\nORDER BY \r\n    ElectionParticipation DESC, \r\n    EventParticipation DESC, \r\n    MessageParticipation DESC\r\nLIMIT 2;",election.club_id);
+                    string getClabMembers = string.Format("SELECT  u.user_id, IFNULL(COUNT(DISTINCT c.candidate_id), 0) AS ElectionParticipation, IFNULL(COUNT(DISTINCT er.event_id), 0) AS EventParticipation, IFNULL(COUNT(DISTINCT m.message_id), 0) AS MessageParticipation FROM  user u JOIN role r ON u.role_id = r.role_id JOIN club_members cm ON u.user_id = cm.user_id LEFT JOIN candidate c ON u.user_id = c.user_id LEFT JOIN event_registration er ON u.user_id = er.user_id LEFT JOIN messages m ON u.user_id = m.user_id WHERE cm.club_id = {0} AND r.role_id = '3' GROUP BY u.user_id HAVING (SELECT COUNT(*) FROM club_members WHERE club_id = {0}) >= 3 ORDER BY ElectionParticipation DESC, EventParticipation DESC, MessageParticipation DESC LIMIT 2;", election.club_id);
 
                     var candidates = await dbConnection.QueryAsync<GetClabMembers>(getClabMembers);
 
@@ -926,7 +926,12 @@ namespace cmis.Manager
                     }
                     string upqueryNewPre = "UPDATE user SET role_id = 2 WHERE user_id = @UserId";
                     int rows = dbConnection.Execute(upqueryNewPre, new { UserId = selection.user_id });
-                    if(rows > 0) { res = "Success"; }
+
+                    string updateElection = "UPDATE election SET status = 'elected' WHERE club_id = @ClubId AND status ='voting'";
+                    int r = dbConnection.Execute(updateElection, new { ClubId = selection.club_id });
+
+
+                    if (r > 0) { res = "Success"; }
 
                 }
                     return res;
