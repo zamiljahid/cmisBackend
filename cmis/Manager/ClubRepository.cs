@@ -904,5 +904,38 @@ namespace cmis.Manager
             }
 
         }
+
+        public async Task<string> SaveSelection(Selection selection)
+        {
+            try
+            {
+                var res = "";
+                using (IDbConnection dbConnection = new MySqlConnection(_connectionString))
+                {
+                    dbConnection.Open();
+                    string getExPre = string.Format("SELECT u.user_id,cm.club_id FROM  club_members cm \r\nJOIN user u ON u.user_id = cm.user_id \r\nWHERE  cm.club_id = {0} AND u.role_id = 2", selection.club_id);
+                    var expreInfo = await dbConnection.QueryFirstOrDefaultAsync<Selection>(getExPre);
+
+                    string upquery = "UPDATE user SET role_id = 5, membership_id = NULL WHERE user_id = @UserId";
+                    int rowsUpdated = dbConnection.Execute(upquery, new { UserId = expreInfo.user_id });
+
+                    if (rowsUpdated > 0)
+                    {
+                        string delquery = "DELETE FROM club_members WHERE user_id = @UserId";
+                        int rowsDelete = dbConnection.Execute(delquery, new { UserId = expreInfo.user_id });
+                    }
+                    string upqueryNewPre = "UPDATE user SET role_id = 2 WHERE user_id = @UserId";
+                    int rows = dbConnection.Execute(upqueryNewPre, new { UserId = selection.user_id });
+                    if(rows > 0) { res = "Success"; }
+
+                }
+                    return res;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
     }
 }

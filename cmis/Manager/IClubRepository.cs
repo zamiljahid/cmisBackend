@@ -29,5 +29,6 @@ namespace cmis.Manager
         Task<int> AddMessageAsync(Message message);
         string GetLatestElectionStatus();
         Task<string> SaveElection(Election election);
+        Task<string> SaveSelection(Selection selection);
     }
 }

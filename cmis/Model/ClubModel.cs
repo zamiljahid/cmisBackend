@@ -160,4 +160,9 @@ namespace cmis.Model
         public int MessageParticipation { get; set; }
 
     }
+    public class Selection
+    {
+        public string user_id { get; set; }
+        public int club_id { get; set; }
+    }
 }

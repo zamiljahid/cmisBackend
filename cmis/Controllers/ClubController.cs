@@ -489,5 +489,21 @@ namespace cmis.Controllers
                 return StatusCode(500, new { error = ex.Message });
             }
         }
+        [HttpPost("SaveSelection")]
+        public async Task<IActionResult> SaveSelection([FromBody] Selection selection)
+        {
+            try
+            {
+                if (selection == null) return BadRequest("Selection data is required.");
+
+                var res = await _clubRepository.SaveSelection(selection);
+
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
     }
 }
