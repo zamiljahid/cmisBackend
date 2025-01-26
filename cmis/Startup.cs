@@ -35,7 +35,7 @@ namespace cmis
             services.AddScoped<IMenuRepository, MenuRepository>();
             services.AddScoped<IClubRepository, ClubRepository>();
             services.AddScoped<IMessageService, MessageService>();
-            services.AddScoped<WebSocketHandler>(); // WebSocketHandler is Scoped
+            services.AddScoped<WebSocketHandler>(); 
 
 
             services.AddSwaggerGen(c =>
