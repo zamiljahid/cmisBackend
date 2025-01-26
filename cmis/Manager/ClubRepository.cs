@@ -860,7 +860,7 @@ namespace cmis.Manager
                     if (candidates.Count() > 0)
                     {
                         string sql = "INSERT INTO election(start_date,end_date,club_id,status)" +
-              "VALUES (@start_date, @end_date, @club_id, @status);";
+              "VALUES (@start_date, @end_date, @club_id, @status);SELECT LAST_INSERT_ID();";
 
                         var parameters = new
                         {
